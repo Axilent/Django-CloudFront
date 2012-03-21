@@ -4,6 +4,7 @@ Cache backend for Django that uses AWS Cloudfront.
 from django.core.cache.backends.base import BaseCache
 
 import boto
+from cStringIO import StringIO
 from django.conf import settings
 
 aws_access_key_id = settings.AWS_ACCESS_KEY_ID
@@ -19,6 +20,8 @@ class CloudFrontCache(BaseCache):
     def add(self, key, value, timeout=None, version=None):
         key = self.make_key(key, version=version)
         self.validate_key(key)
+        self.distro.add_object(key,StringIO(value))
+        # TODO - make URL?
         return True
 
     def get(self, key, default=None, version=None):
